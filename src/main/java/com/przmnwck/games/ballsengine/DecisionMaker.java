@@ -240,6 +240,10 @@ public class DecisionMaker {
                         BoardNode bnp = new BoardNode(new Point(a_row, a_column));
                         bn.addChild(bnp);
                         simBoard(bnp, lb, 1 + ((playerToMove) % getNumberOfPlayers()), currentPlayer, a_row, a_column, firstWon, fieldsMap, startPoint);                     
+                    } else {
+                        if(asses.isPlayerWinning(lb, playerToMove)){
+                            bn.setWin(playerToMove);
+                        }
                     }
                 }
             }

@@ -13,7 +13,17 @@ import java.awt.Point;
 public class BoardNode extends TreeNode {
     
     private  Point startPoint;
+    
+    private int won = -1;
 
+    public int getWin() {
+        return won;
+    }
+
+    public void setWin(int win) {
+        this.won = win;
+    }
+    
     public Point getStartPoint() {
         return startPoint;
     }
