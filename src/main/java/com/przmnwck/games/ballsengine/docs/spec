@@ -1,0 +1,15 @@
+DecisionMaker - klasa, ktora pozwoli zasymulowac gracza i podejmowac decyzje AI o umieszczeniu kuli na planszy.
+
+DM bedzie badal szanse na wygrna na podstawie hipotetycznych ruchow i bedzie liczyl, ktore posuniecie daje
+najwieksza szanse na wygrana.
+
+1. Wez pozycje
+2. W pamieci poloz kule na polu F
+3. Wygrales? Tak - koniec - zrob posuniecie.
+4. Zbuduj wypelnione plansze pochodne od tej pozycji. Zapamietaj ilosc pozycji N
+5. Dla kazdej utworzonej planszy zbadaj czy wygrales Tak - dodaj do licznika L
+6. Oblicz szansewygranej p=L/N
+7. Zapamietaj pare (F,p)
+8. Wroc do 1, az do ostatniego mozliwego ulozenia.
+4. Ze wszystkich par (F,p) wez te, dla ktorej p jest najwieksze
+5. Poloz kule na polu F
