@@ -1,6 +1,5 @@
 package com.przmnwck.games.ballsengine;
 
-import com.przmnwck.games.ballsengine.trees.BoardNode;
 import com.przmnwck.games.ballsengine.trees.Tree;
 import com.przmnwck.games.ballsengine.trees.TreeNode;
 import java.awt.Point;
@@ -244,46 +243,6 @@ public class AppTest
         assertEquals(ns.get(1).getLevel(), T.getMaxBranchLevel(ns.get(1)));
         assertEquals(ns.get(0).getLevel(), T.getMinLevel());
         assertEquals(6, new Tree(ns.get(0).getChildren().get(0)).getMaxLevel());
-    }
-    
-    public void testTreeWon() throws BoardException{
-        Board b = new Board(3);
-        b.placeBall(1, 1, 1);
-        b.placeBall(2, 0, 0);
-        b.placeBall(1, 2, 2);
-        b.placeBall(2, 0, 1);
-        b.placeBall(1, 0, 2);
-        DecisionMaker dc = new DecisionMaker(new Assesor(b), 2);
-        dc.decideMove(2);
-        assertNotNull(dc.decisionTree);
-        List<TreeNode> leaves = dc.decisionTree.findAllLeaves();
-        assertNotNull(leaves);
-        assertFalse(leaves.isEmpty());
-        assertEquals(18, leaves.size());
-        int pl1Won=0;
-        int pl2Won =0;
-        int draws = 0;
-        for (TreeNode tn : leaves) {
-            if (tn instanceof BoardNode) {
-                BoardNode bn = (BoardNode) tn;
-                switch (bn.getWin()) {
-                    case 1:
-                        pl1Won++;
-                        break;
-                    case 2:
-                        pl2Won++;
-                        break;
-                    case -1:
-                        draws++;
-                }
-            }         
-        }
-        assertTrue(pl1Won > 0);
-        System.out.println("Player 1 wins "+ pl1Won + " times");
-        assertTrue(pl2Won > 0);
-        System.out.println("Player 2 wins "+ pl2Won + " times");
-        assertTrue(draws > 0);
-        System.out.println("Draw "+ draws + " times");
     }
     
     

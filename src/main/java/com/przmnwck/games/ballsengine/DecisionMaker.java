@@ -230,29 +230,25 @@ public class DecisionMaker {
     }
     
     protected void simBoard(BoardNode bn, Board b, int playerToMove, final int currentPlayer, int row, int column, final boolean firstWon, Map<Point, Integer> fieldsMap, final Point startPoint) throws CloneNotSupportedException{
-       
-        Board lb1 = (Board) b.clone();
+        Board lb=(Board) b.clone();
 //        System.out.println("In simBoard. Level="+bn.getLevel());
 //        System.out.println(decisionTree.getNodesOfLevel(1).size());
-        if(lb1.placeBall(playerToMove, row, column) && asses.isPlayerWinning(lb1, playerToMove) ){ //mark the node as winning
-            bn.setWin(playerToMove);
-        } else {
-            Board lb = (Board) b.clone();
-            if (!(lb.placeBall(playerToMove, row, column) && asses.isPlayerWinning(lb, playerToMove) && playerToMove == currentPlayer) && bn.getLevel() < getTreeDepth()) {
-                for (int a_row = 0; a_row < lb.getSize(); a_row++) {
-                    for (int a_column = 0; a_column < lb.getSize(); a_column++) {
-                        if (!asses.isPlayerWinning(lb, playerToMove) && lb.isMovePossible(a_row, a_column)) {
-                            BoardNode bnp = new BoardNode(new Point(a_row, a_column));
-                            bn.addChild(bnp);
-                            simBoard(bnp, lb, 1 + ((playerToMove) % getNumberOfPlayers()), currentPlayer, a_row, a_column, firstWon, fieldsMap, startPoint);
-                        } else {
-                            if (asses.isPlayerWinning(lb, playerToMove)) {
-                                bn.setWin(playerToMove);
-                            }
+        if(!(lb.placeBall(playerToMove, row, column) && asses.isPlayerWinning(lb, playerToMove) && playerToMove==currentPlayer) && bn.getLevel()<getTreeDepth()){
+            for (int a_row = 0; a_row < lb.getSize(); a_row++) {
+                for (int a_column = 0; a_column < lb.getSize(); a_column++) {
+                    if (!asses.isPlayerWinning(lb, playerToMove) && lb.isMovePossible(a_row, a_column)) {
+                        BoardNode bnp = new BoardNode(new Point(a_row, a_column));
+                        bn.addChild(bnp);
+                        simBoard(bnp, lb, 1 + ((playerToMove) % getNumberOfPlayers()), currentPlayer, a_row, a_column, firstWon, fieldsMap, startPoint);                     
+                    } else {
+                        if(asses.isPlayerWinning(lb, playerToMove)){
+                            bn.setWin(playerToMove);
                         }
                     }
                 }
             }
+            
         }
+        lb=null;
     }
 }
