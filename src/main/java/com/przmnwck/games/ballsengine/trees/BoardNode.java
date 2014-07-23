@@ -14,6 +14,16 @@ public class BoardNode extends TreeNode {
     
     private  Point startPoint;
     
+    private TreeNodeOperator operator = TreeNodeOperator.OR;
+
+    public TreeNodeOperator getOperator() {
+        return operator;
+    }
+
+    public void setOperator(TreeNodeOperator operator) {
+        this.operator = operator;
+    }
+    
     private int won = -1;
 
     public int getWin() {

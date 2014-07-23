@@ -8,6 +8,7 @@ import com.przmnwck.games.ballsengine.trees.BoardNode;
 import com.przmnwck.games.ballsengine.trees.DecisionTreeSearchOption;
 import com.przmnwck.games.ballsengine.trees.Tree;
 import com.przmnwck.games.ballsengine.trees.TreeNode;
+import com.przmnwck.games.ballsengine.trees.TreeNodeOperator;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,7 +119,6 @@ public class DecisionMaker {
             Logger.getLogger(DecisionMaker.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (b != null) {
-            Map<Point, Integer> fp = new HashMap<Point, Integer>();
             BoardNode bn0=new BoardNode(0, new Point(-1,-1));
             decisionTree= new Tree(bn0);
                for (int i = 0; i < b.getSize(); i++) {
@@ -128,7 +128,7 @@ public class DecisionMaker {
                         BoardNode bn = new BoardNode(new Point(i,j)); 
                         bn0.addChild(bn);
                         if(b.freeFields()<=2*getTreeDepth()){
-                          simBoard(bn, b, player, player, i,j, b.getSize()<DECISION_SIZE_LIMIT, fp, new Point(i,j));  
+                          simBoard(bn, b, player, player, i,j, b.getSize()<DECISION_SIZE_LIMIT, new Point(i,j));  
                         }                      
                         } catch (CloneNotSupportedException ex) {
                             Logger.getLogger(DecisionMaker.class.getName()).log(Level.SEVERE, null, ex);
@@ -147,63 +147,47 @@ public class DecisionMaker {
         return v;
     }
     
-    protected TreeNode getDecisionBranchNode(int cp, DecisionTreeSearchOption option) {
-        int m = -1;
-        int k;
+    
+    protected boolean get_eval(BoardNode bn, int cp){
+        if(bn.getChildren().isEmpty()){ 
+            
+            return bn.getWin()==cp;
+        } else if(bn.getOperator()== TreeNodeOperator.OR){
+            for(TreeNode b: bn.getChildren()){
+                if(b instanceof BoardNode && get_eval((BoardNode)b, cp)){
+                    return true;
+                }
+            }
+            return false;
+        } else if(bn.getOperator()==TreeNodeOperator.AND){
+            for(TreeNode b: bn.getChildren()){
+                if(b instanceof BoardNode && !get_eval((BoardNode)b, cp)){
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false; //the node doesn't lead to victory, but can lead to a draw
+    }
+    
+    protected TreeNode getDecisionBranchNode(int cp) {
         TreeNode minTn = null;
         List<TreeNode> firstLevelNodes = decisionTree.getNodesOfLevel(1);
-        if (asses.getBoard().freeFields() >= freeFieldsRandomMoves ) {
+        
+        if (asses.getBoard().freeFields() >= freeFieldsRandomMoves) {
             //GET RANDOM NODE
             minTn = firstLevelNodes.get(Math.abs(r.nextInt()) % firstLevelNodes.size());
         } else {
             //FIND BEST NODE
+            //TODO: use randomizer to loop through the nodes
             for (TreeNode tn : firstLevelNodes) {
-                if (!containsAllLoosingPaths(tn, cp)){
-                  if (option.equals(DecisionTreeSearchOption.SHORTEST_BRANCH)) {
-                    k = decisionTree.getMinBranchLevel(tn);
-                    if (((k - 1) % getNumberOfPlayers()) == 0 && (k < m || m == -1)) {
-                        minTn = tn;
-                        m = k;
-                    }
-                } else if (option.equals(DecisionTreeSearchOption.LONGEST_BRANCH)) {
-                    //doesn't really matter who wins, just keep the game going, and have a_row chance to block any incomming winning possibility
-                    k = decisionTree.getMaxBranchLevel(tn);
-                    if ((k > m || m == -1) && (decisionTree.getMinBranchLevel(tn) - tn.getLevel()) >= getNumberOfPlayers()) {
-                        minTn = tn;
-                        m = k;
-                    }
-                }  
+                if (tn instanceof BoardNode && get_eval((BoardNode) tn, cp)) {
+                    minTn = tn;
+                    break;
                 }
             }
         }
         return minTn;
-    }
-    
-    /**
-     * Check if the given tree contains a path that leads to all loosing option
-     * @param t Tree to look up to
-     * @return 
-     */
-    protected boolean containsAllLoosingPaths(TreeNode tn, int cp) {
-        Tree t = new Tree(tn);
-        int ml = t.getMaxLevel();
-        List<TreeNode> nodes = new ArrayList<TreeNode>();
-        t.fillNodesOfLevel(tn, nodes, ml - 2);
-        if (!nodes.isEmpty()) {
-            for (TreeNode tn1 : nodes) {
-                List<TreeNode> leaves = new Tree(tn1).findAllLeaves();
-                int s = 0;
-                for (TreeNode n : leaves) {
-                    if (n.getLevel() % getNumberOfPlayers() + 1 != cp) {
-                        s++;
-                    }
-                }
-                if (s == (ml * (ml - 1))) {
-                    return true;
-                }
-            }  
-        }       
-        return false;
     }
     
     /**
@@ -214,13 +198,14 @@ public class DecisionMaker {
     protected Point findBestPoint(int cp){
         //TODO: avoid branches that lead to win of the opponent on all leaves
         //find the quickest way to win
-        TreeNode minTn=getDecisionBranchNode(cp, DecisionTreeSearchOption.SHORTEST_BRANCH);      
-        if(minTn==null){
-            //try to find th longest solution then
-            minTn=getDecisionBranchNode(cp, DecisionTreeSearchOption.LONGEST_BRANCH);          
-        }
+        TreeNode minTn=getDecisionBranchNode(cp);      
         if(minTn==null) {
-            minTn=decisionTree.getNodesOfLevel(1).get(0);
+            int ix=0;
+            List<TreeNode> fl = decisionTree.getNodesOfLevel(1);
+            if(r!=null){
+                ix=Math.abs(r.nextInt()%fl.size());
+            }
+            minTn=decisionTree.getNodesOfLevel(1).get(ix);
         }
         if(minTn!=null && minTn instanceof BoardNode){
             return ((BoardNode)minTn).getStartPoint();
@@ -229,13 +214,17 @@ public class DecisionMaker {
         return new Point(-1,-1);
     }
     
-    protected void simBoard(BoardNode bn, Board b, int playerToMove, final int currentPlayer, int row, int column, final boolean firstWon, Map<Point, Integer> fieldsMap, final Point startPoint) throws CloneNotSupportedException{
+    protected void simBoard(BoardNode bn, Board b, int playerToMove, final int currentPlayer, int row, int column, final boolean firstWon,  final Point startPoint) throws CloneNotSupportedException{
        
         Board lb1 = (Board) b.clone();
 //        System.out.println("In simBoard. Level="+bn.getLevel());
 //        System.out.println(decisionTree.getNodesOfLevel(1).size());
         if(lb1.placeBall(playerToMove, row, column) && asses.isPlayerWinning(lb1, playerToMove) ){ //mark the node as winning
             bn.setWin(playerToMove);
+            //propagate to the parent from the leaf, so that this node isn't chosen
+           if(bn.getParent()!=null && bn.getParent() instanceof BoardNode && playerToMove!=currentPlayer){
+               ((BoardNode)bn.getParent()).setOperator(TreeNodeOperator.AND);
+           }
         } else {
             Board lb = (Board) b.clone();
             if (!(lb.placeBall(playerToMove, row, column) && asses.isPlayerWinning(lb, playerToMove) && playerToMove == currentPlayer) && bn.getLevel() < getTreeDepth()) {
@@ -244,7 +233,7 @@ public class DecisionMaker {
                         if (!asses.isPlayerWinning(lb, playerToMove) && lb.isMovePossible(a_row, a_column)) {
                             BoardNode bnp = new BoardNode(new Point(a_row, a_column));
                             bn.addChild(bnp);
-                            simBoard(bnp, lb, 1 + ((playerToMove) % getNumberOfPlayers()), currentPlayer, a_row, a_column, firstWon, fieldsMap, startPoint);
+                            simBoard(bnp, lb, 1 + ((playerToMove) % getNumberOfPlayers()), currentPlayer, a_row, a_column, firstWon,  startPoint);
                         } else {
                             if (asses.isPlayerWinning(lb, playerToMove)) {
                                 bn.setWin(playerToMove);

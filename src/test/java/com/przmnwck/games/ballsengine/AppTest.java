@@ -286,5 +286,16 @@ public class AppTest
         System.out.println("Draw "+ draws + " times");
     }
     
+    public void testTreeEval() throws BoardException{
+        Board b = new Board(3);
+        b.fields = new int[][]{{2,0,0},{0,1,0},{0,0,1}};
+        DecisionMaker dc = new DecisionMaker(new Assesor(b), 2);
+        dc.decideMove(2);
+        BoardNode bn = (BoardNode) dc.decisionTree.getNodesOfLevel(1).get(0);
+        assertNotNull(bn);
+        assertEquals(0, bn.getStartPoint().x);
+        assertEquals(1, bn.getStartPoint().y);
+    }
+    
     
 }
