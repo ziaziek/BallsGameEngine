@@ -5,7 +5,7 @@
 package com.przmnwck.games.ballsengine;
 
 import com.przmnwck.games.ballsengine.trees.BoardNode;
-import com.przmnwck.games.ballsengine.trees.DecisionTreeSearchOption;
+import decisiontrees.DecisionTreeSearchOption;
 import com.przmnwck.games.ballsengine.trees.Tree;
 import com.przmnwck.games.ballsengine.trees.TreeNode;
 import java.awt.Point;

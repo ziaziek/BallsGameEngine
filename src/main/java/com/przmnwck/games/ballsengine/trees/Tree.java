@@ -4,6 +4,7 @@
  */
 package com.przmnwck.games.ballsengine.trees;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,8 @@ import java.util.List;
  *
  * @author Przemo
  */
-public class Tree {
+
+public class Tree implements Serializable{
     private TreeNode rootNode=null;
     
     public Tree(){
