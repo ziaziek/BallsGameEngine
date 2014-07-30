@@ -2,7 +2,10 @@ package com.przmnwck.games.ballsengine;
 
 import com.przmnwck.games.ballsengine.trees.Tree;
 import com.przmnwck.games.ballsengine.trees.TreeNode;
+import decisiontrees.DecisionTreesBuilder;
 import java.awt.Point;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import junit.framework.Test;
@@ -245,5 +248,13 @@ public class AppTest
         assertEquals(6, new Tree(ns.get(0).getChildren().get(0)).getMaxLevel());
     }
     
-    
+    public void testDTBuilder() throws FileNotFoundException, IOException, ClassNotFoundException{
+        int np =2; int bs = 3;
+        String dir = "D:/Trees";
+        DecisionTreesBuilder builder = new DecisionTreesBuilder(np, bs);
+        builder.loadTree(bs, np, dir);
+        assertNotNull(builder.getCurrentTree());
+        assertFalse(builder.getCurrentTree().getNodesOfLevel(1).isEmpty());
+        assertTrue(builder.getCurrentTree().getMaxLevel()>0);
+    }
 }
