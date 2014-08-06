@@ -4,6 +4,8 @@
  */
 package com.przmnwck.games.ballsengine;
 
+import java.awt.Point;
+
 /**
  * Ta klasa ocenia pozycję i decyduje, czy jest wygrana oraz kto wygrywa
  * @date 2014-06-07
@@ -122,7 +124,7 @@ public class Assesor implements IBoardListener {
         return csq;
     }
 
-    public void ballPlaced(int player) {
+    public void ballPlaced(int player, Point R) {
         if(isPlayerWinning(board, player)){
             //implement something more
             System.out.println("Player "+player+" wins!");

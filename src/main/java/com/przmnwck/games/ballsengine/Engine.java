@@ -7,6 +7,10 @@ package com.przmnwck.games.ballsengine;
 import com.przmnwck.games.ballsengine.interfaces.IEngineListener;
 import com.przmnwck.games.ballsengine.interfaces.IRenderer;
 import com.przmnwck.games.ballsengine.interfaces.IValuesProvider;
+import decisiontrees.DecisionTreesBuilder;
+import java.awt.Point;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,6 +22,8 @@ import java.util.logging.Logger;
  * @author Przemo
  */
 public class Engine implements IBoardListener {
+    
+    public static final String TREES_DIRECTORY = "D:/Trees";
     
     // First move of tha auto player. It's used for determining the strategy of the central points
     private boolean autoFirstMove = true;
@@ -71,13 +77,28 @@ private boolean gameOver=false;
      * @param boardSize size of the board
      * @param automaticPlayer ordinal number of the automatic player
      */
-    public Engine(int numberOfPlayers, int boardSize, int automaticPlayer) throws BoardException {
+    public Engine(int numberOfPlayers, int boardSize, int automaticPlayer) throws BoardException, EngineStartException {
         this.numberOfPlayers=numberOfPlayers;
         board = new Board(boardSize);
-        board.addListener(this);
         this.automaticPlayer=automaticPlayer;
-        dc = new DecisionMaker(new Assesor(board), this.numberOfPlayers);
-        engineListeners=new ArrayList<IEngineListener>();
+        DecisionTreesBuilder builder = new DecisionTreesBuilder(this.numberOfPlayers, board.getSize());
+        try {
+            builder.loadTree(boardSize, numberOfPlayers, Engine.TREES_DIRECTORY);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if(builder.getCurrentTree()!=null){
+           dc = new DecisionMaker(new Assesor(board), this.numberOfPlayers, builder.getCurrentTree());
+        engineListeners=new ArrayList<IEngineListener>(); 
+        } else {
+            throw new EngineStartException();
+        }
+        //The engine has to be added to the listeners after the decision maker to make sure that decisin maker current node hets updated before a move is made.
+        board.addListener(this);
     }
     
     public int[] getInputValues() {
@@ -140,32 +161,32 @@ private boolean gameOver=false;
         }
     }
     
-    public void ballPlaced(int player) {
+    public void ballPlaced(int player, Point R) {
         gameOver = (dc.getAsses() != null && dc.getAsses().isPlayerWinning(player)) || board.freeFields()==0;
         EngineEvent evt = new EngineEvent(this);
         evt.player=player;
-        if(gameOver && board.freeFields()>0){
-            evt.state=EngineState.GAMEOVER;
-        } else {
-            if(gameOver && board.freeFields()==0){
-                evt.state=EngineState.DRAW;
+        if(gameOver){
+            if(board.freeFields()>0){
+              evt.state=EngineState.GAMEOVER;  
             } else {
-               evt.state = EngineState.CONTINUE; 
+                if(dc.getAsses().isPlayerWinning(player)){
+                    evt.state=EngineState.GAMEOVER;
+                } else {
+                  evt.state=EngineState.DRAW;  
+                }
             }         
+        } else {
+            evt.state = EngineState.CONTINUE;          
         }
         notifyListeners(evt);
         if (!gameOver && automaticPlayer > 0 && 1 + player % numberOfPlayers == automaticPlayer) {
             evt.setState(EngineState.WAIT);
             notifyListeners(evt);
-            new Thread(new Runnable() {
-                public void run() {
-                    int[] p = dc.decideMove(automaticPlayer, autoFirstMove);
-                    if(autoFirstMove){
-                        autoFirstMove=false;
-                    }
-                    board.placeBall(automaticPlayer, p[0], p[1]);
-                }
-            }).start();
+            int[] p = dc.decideMove(automaticPlayer, autoFirstMove);
+            if (autoFirstMove) {
+                autoFirstMove = false;
+            }
+            board.placeBall(automaticPlayer, p[0], p[1]);
         }
     }
 }

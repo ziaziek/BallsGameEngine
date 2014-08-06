@@ -64,6 +64,7 @@ public class DecisionTreesBuilder {
                     }
                 }
             }
+               return currentTree;
         } catch (BoardException ex) {
             Logger.getLogger(DecisionTreesBuilder.class.getName()).log(Level.SEVERE, null, ex);
         }      

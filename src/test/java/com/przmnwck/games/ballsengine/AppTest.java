@@ -203,7 +203,8 @@ public class AppTest
         int np=2;
         Board b = new Board(3);
         Assesor as = new Assesor(b);
-        DecisionMaker dc = new DecisionMaker(as, np);
+        DecisionTreesBuilder builder = new DecisionTreesBuilder(np, b.getSize());
+        DecisionMaker dc = new DecisionMaker(as, np, builder.buildTree());
         assertNotNull(b);
         assertNotNull(as);
         assertNotNull(dc);

@@ -7,6 +7,7 @@ package com.przmnwck.games.ballsengine;
 import java.awt.Point;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,7 @@ public class Board implements Serializable, Cloneable{
 
     public List<IBoardListener> getBoardListeners() {
         if(boardListeners==null){
-            boardListeners = new ArrayList<IBoardListener>();
+            boardListeners = new LinkedList<IBoardListener>();
         }
         return boardListeners;
     }
@@ -71,7 +72,7 @@ public class Board implements Serializable, Cloneable{
         if(row>=0 && column>=0 && player>0 && row<size && column<size){
             if(fields[row][column]==0){
                 fields[row][column]=player;
-                notifyBoardListeners(player);
+                notifyBoardListeners(player, new Point(row, column));
                 return true;
             } else {
                 return false;
@@ -131,9 +132,9 @@ public class Board implements Serializable, Cloneable{
         return ret;
     }
     
-    protected void notifyBoardListeners(int p){
+    protected void notifyBoardListeners(int p, Point R){
         for(IBoardListener l : getBoardListeners()){
-            l.ballPlaced(p);
+            l.ballPlaced(p, R);
         }
     }
     

@@ -4,10 +4,12 @@
  */
 package com.przmnwck.games.ballsengine;
 
+import java.awt.Point;
+
 /**
  *
  * @author Przemysław
  */
 public interface IBoardListener {
-    public void ballPlaced(int player);
+    public void ballPlaced(int player, Point R);
 }
