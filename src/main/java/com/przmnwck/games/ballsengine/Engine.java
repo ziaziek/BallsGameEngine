@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class Engine implements IBoardListener {
     
-    public static final String TREES_DIRECTORY = "C:/Trees";
+    public static final String TREES_DIRECTORY = "D:/Trees";
     
     // First move of tha auto player. It's used for determining the strategy of the central points
     private boolean autoFirstMove = true;

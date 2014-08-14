@@ -1,0 +1,45 @@
+DecisiomsTreesBuilder buduje drzewa decyzyjne i zachowuje je w pliku serializowanym.
+
+O ile podejście to jest dobre dla małych drzew z planszą do 3 x 3, o tyle już 4 x 4 jest zabójcze dla systemu, gdyż wygenerowanie takiego drzewa wiąże się
+z ogromną konsumpcją pamięci, ponad to co system jest w stanie dostarczyć (>16GB).
+
+Ponadto ładowanie takich drzew jest dość czasochłonne.
+
+Dlatego tak jak w dotychczasowym podejściu o budowaniu drzew w trakcie rozgrywki wtedy, gdy przekroczymy zakładaną ilość wolnych pól, należy zbudować drzewa
+cząstkowe dla różnych pozycji wyjściowych w danym momencie.
+
+Będzie to tym większa liczba drzew, im większa jest plansza i liczba graczy.
+
+To podejście należy zastosować również dla planszy 3x3, gdyż przyspieszy to zdecydowanie ładowanie pliku drzewa.
+
+Moment budowania drzew.
+
+Drzewa powinny być budowane od momentu, kiedy rozgrywka staje się coraz bardziej przewidywalna:
+Plansza     Wolne pola   Liczba graczy do     Ilość drzew
+3x3           8             2                   8
+4x4           12            3                   24
+5x5           20            3                   40
+6x6           30            4                   120  
+nxn           nx(n-1)       k                   (k-1)xnx(n-1)
+
+To wciąź może powodować generowanie dużych drzew, ale wymaga to sprawdzenia.      
+
+Nzewnictwo plików.
+
+Należy stworzyć system identyfikowania pliku po nazwie, jako że dla różnych pozycji wyjściowych, należy wczytać inny plik.
+Mamy już rozróżnienie dla ilości pól i graczy. Potrzeba schematu dla pozycji.
+
+Proponuje się zastosować podejście bazodanowe, tj. dodanie specjalnego pliku index, który będzie zawierał mapę klucz-wartość -> pozycja na planszy->plik. Program będzie dzięki temu
+mógł szybko odszukać pozycję, która się ustawiła i wczytać dany plik drzewa decyzyjnego.
+
+Same nazwy plików nie są wówczas aż tak istotne i mogą być nazywane po prostu dt_<timestamp>, jeśli będą odpowiednio sklasyfikowane w pliku index.
+
+Pozycje wyjściowe
+
+Pozycje wyjściowe, dla których generowane będą drzewa są permutacjami zajętych pól. Wystarczy zatem określić macierz zajętości pól jako pozycję wyjściową i taką też zapoisać w pliku
+index, a następnie odczytywać dane drzewo.
+DecisionTreesBuilder zapisuje w liściu, kto wygrywa. To cały czas jest ok. Będziemy przy budowaniu drzew podawać numer gracza, który aktualnie ma ruszyć.
+Informację tę otrzymujemy poprzez ustalenie ile ruchów wykonano a ilu jest graczy: ilosc_ruchow%ilosc_graczy +1, ilosc_ruchow=rozmiar_planszy-wolne_pola, np.
+1%2+1 = 2, dla planszy 3x3 i 1 wykonanego ruchu, lub
+4%3+1 = 4, dla planszy 4x4 i 3-ech graczy, lub
+4%2+1 = 1, dla planszy 4x4 i 2 graczy, itd.
