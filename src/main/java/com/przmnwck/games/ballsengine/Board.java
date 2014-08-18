@@ -6,7 +6,7 @@ package com.przmnwck.games.ballsengine;
 
 import java.awt.Point;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -190,5 +190,9 @@ public class Board implements Serializable, Cloneable{
             }
         }
         return ret;
+    }
+    
+    public boolean equalPosition(Board b){
+        return Arrays.equals(getFields(), b.getFields());
     }
 }

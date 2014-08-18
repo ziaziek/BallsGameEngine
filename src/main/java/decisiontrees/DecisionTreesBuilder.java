@@ -17,8 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +32,7 @@ public class DecisionTreesBuilder {
     Tree currentTree;
     Assesor asses;
     
+    
     public Tree getCurrentTree() {
         return currentTree;
     }
@@ -44,8 +44,17 @@ public class DecisionTreesBuilder {
     
     public Tree buildTree(){
         try {
+            return buildTree(new Board(bs));
+        } catch (BoardException ex) {
+            Logger.getLogger(DecisionTreesBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+    
+    
+    public Tree buildTree(Board board){
+        if(board!=null){
             int player = 1; //start from scratch
-            Board board = new Board(bs);
             asses= new Assesor(board);
             BoardNode bn0=new BoardNode(0, new Point(-1,-1));
             currentTree= new Tree(bn0);
@@ -62,10 +71,8 @@ public class DecisionTreesBuilder {
                     }
                 }
             }
-               return currentTree;
-        } catch (BoardException ex) {
-            Logger.getLogger(DecisionTreesBuilder.class.getName()).log(Level.SEVERE, null, ex);
-        }      
+               return currentTree;   
+        }     
         return null;
     }
     
@@ -91,13 +98,17 @@ public class DecisionTreesBuilder {
         lb=null;
     }
         
-    public void saveTree(Tree t, String dirLocation, int boardSize, int numberOfPlayers) throws FileNotFoundException, IOException{
+    public String saveTree(Tree t, String dirLocation, int boardSize, int numberOfPlayers) throws FileNotFoundException, IOException{
         if(currentTree!=null && !currentTree.getNodesOfLevel(1).isEmpty()){
-            FileOutputStream str = new FileOutputStream(getFileName(dirLocation, boardSize, numberOfPlayers));
+            String fn = getFileName(dirLocation, boardSize, numberOfPlayers);
+            FileOutputStream str = new FileOutputStream(fn);
             ObjectOutputStream ostr = new ObjectOutputStream(str);
             ostr.writeObject(currentTree);
             ostr.close();
             str.close();
+            return fn;
+        } else{
+            return null;
         }
     }
     
@@ -107,8 +118,9 @@ public class DecisionTreesBuilder {
         currentTree = (Tree) oistr.readObject();
     }
 
+    
     private String getFileName(String dirLocation, int boardSize, int numberOfPlayers) {
-        return dirLocation+"/dt_"+boardSize+"_"+numberOfPlayers+ DecisionTreesBuilderSettings.DECISION_TREES_EXTENSION;
+        return dirLocation+"/dt_"+boardSize+"_"+numberOfPlayers+ new Date().getTime()+ DecisionTreesBuilderSettings.DECISION_TREES_EXTENSION;
     }
     
 }
