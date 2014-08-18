@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class Engine implements IBoardListener {
     
-    public static final String TREES_DIRECTORY = "D:/Trees";
+    
     
     // First move of tha auto player. It's used for determining the strategy of the central points
     private boolean autoFirstMove = true;
@@ -83,7 +83,7 @@ private boolean gameOver=false;
         this.automaticPlayer=automaticPlayer;
         DecisionTreesBuilder builder = new DecisionTreesBuilder(this.numberOfPlayers, board.getSize());
         try {
-            builder.loadTree(boardSize, numberOfPlayers, Engine.TREES_DIRECTORY);
+            builder.loadTree(boardSize, numberOfPlayers, decisiontrees.DecisionTreesBuilderSettings.TREES_DIRECTORY);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

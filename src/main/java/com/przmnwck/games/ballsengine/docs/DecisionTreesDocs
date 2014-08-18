@@ -16,11 +16,11 @@ Moment budowania drzew.
 
 Drzewa powinny być budowane od momentu, kiedy rozgrywka staje się coraz bardziej przewidywalna:
 Plansza     Wolne pola   Liczba graczy do     Ilość drzew
-3x3           8             2                   8
-4x4           12            3                   24
-5x5           20            3                   40
-6x6           30            4                   120  
-nxn           nx(n-1)       k                   (k-1)xnx(n-1)
+3x3           8             2                  
+4x4           12            3                  
+5x5           20            3                  
+6x6           30            4                  
+nxn           nx(n-1)       k                   
 
 To wciąź może powodować generowanie dużych drzew, ale wymaga to sprawdzenia.      
 
@@ -36,7 +36,7 @@ Same nazwy plików nie są wówczas aż tak istotne i mogą być nazywane po pro
 
 Pozycje wyjściowe
 
-Pozycje wyjściowe, dla których generowane będą drzewa są permutacjami zajętych pól. Wystarczy zatem określić macierz zajętości pól jako pozycję wyjściową i taką też zapoisać w pliku
+Pozycje wyjściowe, dla których generowane będą drzewa są permutacjami zajętych pól. Wystarczy zatem określić macierz zajętości pól jako pozycję wyjściową i taką też zapisać w pliku
 index, a następnie odczytywać dane drzewo.
 DecisionTreesBuilder zapisuje w liściu, kto wygrywa. To cały czas jest ok. Będziemy przy budowaniu drzew podawać numer gracza, który aktualnie ma ruszyć.
 Informację tę otrzymujemy poprzez ustalenie ile ruchów wykonano a ilu jest graczy: ilosc_ruchow%ilosc_graczy +1, ilosc_ruchow=rozmiar_planszy-wolne_pola, np.

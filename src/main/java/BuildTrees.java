@@ -32,7 +32,7 @@ public class BuildTrees {
                 builder.buildTree();
                 System.out.println("Tree built.");
                 try {
-                    builder.saveTree(builder.getCurrentTree(), Engine.TREES_DIRECTORY, boardSizes[i], p);
+                    builder.saveTree(builder.getCurrentTree(), decisiontrees.DecisionTreesBuilderSettings.TREES_DIRECTORY, boardSizes[i], p);
                     System.out.println("Tree created and saved for np="+p+", bs="+boardSizes[i]);
                 } catch (FileNotFoundException ex) {
                     Logger.getLogger(BuildTrees.class.getName()).log(Level.SEVERE, null, ex);

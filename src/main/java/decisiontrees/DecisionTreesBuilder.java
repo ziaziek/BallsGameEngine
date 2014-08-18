@@ -28,7 +28,6 @@ import java.util.logging.Logger;
  */
 public class DecisionTreesBuilder {
     
-    public final String DECISION_TREES_EXTENSION=".dtf";
     int np;
     int bs;
     Tree currentTree;
@@ -48,7 +47,6 @@ public class DecisionTreesBuilder {
             int player = 1; //start from scratch
             Board board = new Board(bs);
             asses= new Assesor(board);
-            Map<Point, Integer> fp = new HashMap<Point, Integer>();
             BoardNode bn0=new BoardNode(0, new Point(-1,-1));
             currentTree= new Tree(bn0);
                for (int i = 0; i < board.getSize(); i++) {
@@ -57,7 +55,7 @@ public class DecisionTreesBuilder {
                         //move possible at all
                         BoardNode bn = new BoardNode(new Point(i,j)); 
                         bn0.addChild(bn);
-                          simBoard(bn, board, player, player, i,j, true, fp, new Point(i,j));                      
+                          simBoard(bn, board, player, player, i,j, true, new Point(i,j));                      
                         } catch (CloneNotSupportedException ex) {
                             Logger.getLogger(DecisionMaker.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -71,7 +69,7 @@ public class DecisionTreesBuilder {
         return null;
     }
     
-        protected void simBoard(BoardNode bn, Board b, int playerToMove, final int currentPlayer, int row, int column, final boolean firstWon, Map<Point, Integer> fieldsMap, final Point startPoint) throws CloneNotSupportedException{
+        protected void simBoard(BoardNode bn, Board b, int playerToMove, final int currentPlayer, int row, int column, final boolean firstWon, final Point startPoint) throws CloneNotSupportedException{
         Board lb=(Board) b.clone();
 //        System.out.println("In simBoard. Level="+bn.getLevel());
 //        System.out.println(decisionTree.getNodesOfLevel(1).size());
@@ -81,7 +79,7 @@ public class DecisionTreesBuilder {
                     if (!asses.isPlayerWinning(lb, playerToMove) && lb.isMovePossible(a_row, a_column)) {
                         BoardNode bnp = new BoardNode(new Point(a_row, a_column));
                         bn.addChild(bnp);
-                        simBoard(bnp, lb, 1 + ((playerToMove) % np), currentPlayer, a_row, a_column, firstWon, fieldsMap, startPoint);                     
+                        simBoard(bnp, lb, 1 + ((playerToMove) % np), currentPlayer, a_row, a_column, firstWon, startPoint);                     
                     } else {
                         if(asses.isPlayerWinning(lb, playerToMove)){
                             bn.setWin(playerToMove);
@@ -110,7 +108,7 @@ public class DecisionTreesBuilder {
     }
 
     private String getFileName(String dirLocation, int boardSize, int numberOfPlayers) {
-        return dirLocation+"/dt_"+boardSize+"_"+numberOfPlayers+ DECISION_TREES_EXTENSION;
+        return dirLocation+"/dt_"+boardSize+"_"+numberOfPlayers+ DecisionTreesBuilderSettings.DECISION_TREES_EXTENSION;
     }
     
 }
