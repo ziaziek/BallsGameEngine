@@ -5,7 +5,6 @@
 package com.przmnwck.games.ballsengine.impl;
 
 import com.przmnwck.games.ballsengine.Board;
-import com.przmnwck.games.ballsengine.Board;
 import com.przmnwck.games.ballsengine.interfaces.IRenderer;
 
 /**
@@ -14,6 +13,7 @@ import com.przmnwck.games.ballsengine.interfaces.IRenderer;
  */
 public class BoardRenderer implements IRenderer {
 
+    @Override
     public void renderResult(Board b) {
         String bstr="+";
         for (int rows = 0; rows < b.getSize(); rows++) {

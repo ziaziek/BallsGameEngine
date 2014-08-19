@@ -18,9 +18,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 /**
  *
  * @author Przemo
@@ -31,7 +30,7 @@ public class DecisionTreesBuilder {
     int bs;
     Tree currentTree;
     Assesor asses;
-    
+    Logger log = Logger.getLogger(DecisionTreesBuilder.class.getName());
     
     public Tree getCurrentTree() {
         return currentTree;
@@ -46,7 +45,7 @@ public class DecisionTreesBuilder {
         try {
             return buildTree(new Board(bs));
         } catch (BoardException ex) {
-            Logger.getLogger(DecisionTreesBuilder.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DecisionTreesBuilder.class.getName()).log(Level.ERROR, null, ex);
             return null;
         }
     }
@@ -54,6 +53,7 @@ public class DecisionTreesBuilder {
     
     public Tree buildTree(Board board){
         if(board!=null){
+            log.info("Starting building tree for board");
             int player = 1; //start from scratch
             asses= new Assesor(board);
             BoardNode bn0=new BoardNode(0, new Point(-1,-1));
@@ -64,9 +64,10 @@ public class DecisionTreesBuilder {
                         //move possible at all
                         BoardNode bn = new BoardNode(new Point(i,j)); 
                         bn0.addChild(bn);
+                        log.info("New child added to the tree");
                           simBoard(bn, board, player, player, i,j, true, new Point(i,j));                      
                         } catch (CloneNotSupportedException ex) {
-                            Logger.getLogger(DecisionMaker.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(DecisionMaker.class.getName()).log(Level.ERROR, null, ex);
                         }
                     }
                 }

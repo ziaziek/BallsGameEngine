@@ -15,7 +15,7 @@ import java.util.List;
 public class DecisionTreesBuilderHelper {
     
         public static List<int[]> createOccupationMatrixList(int boardSize, int numberOfMovesToGo){
-        List<int[]> ret = new ArrayList<int[]>();
+        List<int[]> ret = new ArrayList<>();
         int w = boardSize * boardSize;
         fill(0, 0, w, numberOfMovesToGo, new int[numberOfMovesToGo], ret);
         return ret;
@@ -32,9 +32,9 @@ public class DecisionTreesBuilderHelper {
         }
     }
     
-    protected static Board convertIndexMatrixToBoard(int[]v, int numberOfPlayers) throws BoardException{
-        Board b = new Board(v.length);
-        int player=0;
+    protected static Board convertIndexMatrixToBoard(int[]v, int numberOfPlayers, int boardSize) throws BoardException{
+        Board b = new Board(boardSize);
+        int player=1;
         for(int x: v){
             b.placeBall(player, (int) Math.floor(x/b.getSize()), x%b.getSize());
             player++;
@@ -46,9 +46,9 @@ public class DecisionTreesBuilderHelper {
     }
     
     public static List<Board> createOccupiedBoardsList(int boardSize, int movesToGo, int numberOfPlayers) throws BoardException{
-        List<Board> ret = new ArrayList<Board>();
+        List<Board> ret = new ArrayList<>();
         for(int[] v: createOccupationMatrixList(boardSize, movesToGo)){
-            ret.add(convertIndexMatrixToBoard(v, numberOfPlayers));
+            ret.add(convertIndexMatrixToBoard(v, numberOfPlayers, boardSize));
         }
         return ret;
     }

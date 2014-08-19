@@ -21,11 +21,11 @@ import java.util.logging.Logger;
 public class Board implements Serializable, Cloneable{
     int size;
     int[][] fields;
-    List<IBoardListener> boardListeners = null;
+    transient List<IBoardListener> boardListeners = null;
 
     public List<IBoardListener> getBoardListeners() {
         if(boardListeners==null){
-            boardListeners = new LinkedList<IBoardListener>();
+            boardListeners = new LinkedList<>();
         }
         return boardListeners;
     }

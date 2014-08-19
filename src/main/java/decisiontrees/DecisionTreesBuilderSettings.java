@@ -14,8 +14,11 @@ public class DecisionTreesBuilderSettings {
     public static final String INDEX_FILE = "index.dtf";
     public static final String TREES_DIRECTORY = "D:/Trees";
     
-    public static int getBoardFreeFieldsSetting(int boardSize){
-        return boardSize*(boardSize-1);
+    public static int getBoardFreeFieldsSetting(int boardSize, int np){
+        if(np<=0){
+            np=1;
+        }
+        return (int) (  boardSize*(boardSize-1)/(np+1));
     }
     
     public static int getMaxPlayers(int boardSize){
