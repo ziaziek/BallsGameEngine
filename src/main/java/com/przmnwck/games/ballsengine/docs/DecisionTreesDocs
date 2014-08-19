@@ -43,3 +43,11 @@ Informację tę otrzymujemy poprzez ustalenie ile ruchów wykonano a ilu jest gr
 1%2+1 = 2, dla planszy 3x3 i 1 wykonanego ruchu, lub
 4%3+1 = 4, dla planszy 4x4 i 3-ech graczy, lub
 4%2+1 = 1, dla planszy 4x4 i 2 graczy, itd.
+
+19/08/2014
+Przebudowano DecisionTreesBuilder wg powyższej specyfikacji. Pliki są tworzone, ale ze względu na ich wielkość zmieniono sposób obliczania momentu, od kiedy drzewo jest brane pod uwagę:
+                                    (int) (  boardSize*(boardSize-1)/(np+1))    (1)
+Drzewa budowały się znacznie swzybciej i były mniej pamięciożerne. Jednak ze względu na ilość tych drzew oraz sumaryczną wielkość sięgającą 15GB, należy porzucić również tę metodę.
+
+Będziemy budować drzewo w pamięci zaraz po przekroczeniu granicy wolnych pól danej wzorem (1).
+Drzewa te są budowane w relatywnie krótkim czasie i nie potrzebują zbyt dużo pamięci.
