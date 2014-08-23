@@ -42,6 +42,19 @@ public class Board implements Serializable, Cloneable{
         return fields;
     }
     
+    public Point[] getPointFields(){
+        Point[] pret = new Point[getSize()*getSize()];
+        int counter=0;
+        for(int i=0; i<getSize();i++){
+            for(int j=0; j<getSize(); j++){
+                Point p = new Point(i,j);
+                pret[counter]=p;
+                counter++;
+            }
+        }
+        return pret;
+    }
+    
     /**
      * Create a rectangular board
      * @param board_size number of rows or columns of the board

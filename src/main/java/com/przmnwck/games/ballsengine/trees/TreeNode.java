@@ -36,7 +36,7 @@ public class TreeNode implements Serializable {
     
     
     public TreeNode(){
-        children = new ArrayList<TreeNode>();
+        children = new ArrayList<>();
     }
     
     public TreeNode(int Level){

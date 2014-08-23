@@ -11,11 +11,9 @@ import com.przmnwck.games.ballsengine.DecisionMaker;
 import com.przmnwck.games.ballsengine.trees.BoardNode;
 import com.przmnwck.games.ballsengine.trees.Tree;
 import java.awt.Point;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
 import org.apache.log4j.Level;
@@ -112,12 +110,7 @@ public class DecisionTreesBuilder {
             return null;
         }
     }
-    
-    public void loadTree(int boardSize, int numberOfPlayers, String dirLocation) throws FileNotFoundException, IOException, ClassNotFoundException{
-        FileInputStream istr = new FileInputStream(getFileName(dirLocation, boardSize, numberOfPlayers));
-        ObjectInputStream oistr = new ObjectInputStream(istr);
-        currentTree = (Tree) oistr.readObject();
-    }
+   
 
     
     private String getFileName(String dirLocation, int boardSize, int numberOfPlayers) {

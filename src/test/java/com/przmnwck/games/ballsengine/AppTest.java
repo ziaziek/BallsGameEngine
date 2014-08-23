@@ -202,7 +202,7 @@ public class AppTest
         Board b = new Board(3);
         Assesor as = new Assesor(b);
         DecisionTreesBuilder builder = new DecisionTreesBuilder(np, b.getSize());
-        DecisionMaker dc = new DecisionMaker(as, np, builder.buildTree());
+        DecisionMaker dc = new DecisionMaker(as, np);
         assertNotNull(b);
         assertNotNull(as);
         assertNotNull(dc);
@@ -214,11 +214,11 @@ public class AppTest
         assertTrue(b.placeBall(2, 1, 1));
         assertEquals(0,as.asses(b, np)); //No player is winning
         //now it's player 1's turn
-        int[] R = dc.decideMove(1);
-        assertEquals(2, R.length);
-        assertFalse(-1==R[0]);
-        assertFalse(-1==R[1]);
-        System.out.println(R[0]+","+R[1]);
+        Point R = dc.decideMove(1);
+        assertNotNull(R);
+        assertFalse(-1==R.x);
+        assertFalse(-1==R.y);
+        System.out.println(R.x+","+R.y);
     }
     
     public void testTree(){
