@@ -22,7 +22,7 @@ public class Assesor implements IBoardListener {
     
     /**
      * Creator
-     * @param bSize Size of the board (number of fields in a row (column)
+     * @param b Board
      */
     public Assesor(Board b){
         seq_winning=getNumberOfWinningSequence(b.getSize(), b.getSize());
@@ -124,6 +124,7 @@ public class Assesor implements IBoardListener {
         return csq;
     }
 
+    @Override
     public void ballPlaced(int player, Point R) {
         if(isPlayerWinning(board, player)){
             //implement something more

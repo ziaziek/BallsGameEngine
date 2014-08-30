@@ -49,28 +49,34 @@ public class DecisionTreesBuilder {
     }
     
     
-    public Tree buildTree(Board board){
-        if(board!=null){
-            log.info("Starting building tree for board");
-            int player = 1; //start from scratch
-            asses= new Assesor(board);
-            BoardNode bn0=new BoardNode(0, new Point(-1,-1));
-            currentTree= new Tree(bn0);
-               for (int i = 0; i < board.getSize(); i++) {
-                for (int j = 0; j < board.getSize(); j++) {
-                    if(board.isMovePossible(i, j)) {try {
-                        //move possible at all
-                        BoardNode bn = new BoardNode(new Point(i,j)); 
-                        bn0.addChild(bn);
-                        log.info("New child added to the tree");
-                          simBoard(bn, board, player, player, i,j, true, new Point(i,j));                      
+    public Tree buildTree(Board boardGiven){
+        if(boardGiven!=null){
+            try {
+                Board board = (Board) boardGiven.clone();
+                log.info("Starting building tree for board");
+                int player = 1; //start from scratch
+                asses= new Assesor(board);
+                BoardNode bn0=new BoardNode(0, new Point(-1,-1));
+                currentTree= new Tree(bn0);
+                for (int i = 0; i < board.getSize(); i++) {
+                    for (int j = 0; j < board.getSize(); j++) {
+                        if(board.isMovePossible(i, j)) 
+                        {try {
+                            //move possible at all
+                            BoardNode bn = new BoardNode(new Point(i,j));
+                            bn0.addChild(bn);
+                            log.info("New child added to the tree");                      
+                            simBoard(bn, board, player, player, i,j, true, new Point(i,j));
                         } catch (CloneNotSupportedException ex) {
                             Logger.getLogger(DecisionMaker.class.getName()).log(Level.ERROR, null, ex);
                         }
+                        }
                     }
                 }
+                return currentTree;
+            } catch (CloneNotSupportedException ex) {
+                log.error(ex.getMessage());
             }
-               return currentTree;   
         }     
         return null;
     }

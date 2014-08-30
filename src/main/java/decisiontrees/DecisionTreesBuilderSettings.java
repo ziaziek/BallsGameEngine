@@ -18,7 +18,7 @@ public class DecisionTreesBuilderSettings {
         if(np<=0){
             np=1;
         }
-        return (int) (  boardSize*(boardSize-1)/(np+1));
+        return (int) (boardSize*(boardSize+1)/(np)) + 1;
     }
     
     public static int getMaxPlayers(int boardSize){

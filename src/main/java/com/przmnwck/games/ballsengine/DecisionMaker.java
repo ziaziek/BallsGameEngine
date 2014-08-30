@@ -12,21 +12,21 @@ import decisiontrees.DecisionTreesBuilder;
 import java.awt.Point;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.LogManager;
 
 /**
  *
  * @author Przemysław
  */
-public class DecisionMaker implements IBoardListener {
+public class DecisionMaker {
     
     Assesor asses = null;
     Random r = null;
     private final int DECISION_SIZE_LIMIT=30;
     private final int MAX_DEFAULT_TREE_DEPTH=8;
     protected int treeDepth = MAX_DEFAULT_TREE_DEPTH;
-
+    org.apache.log4j.Logger lg = null; 
+    
     public void setTreeDepth(int treeDepth) {
         this.treeDepth = treeDepth;
     }
@@ -54,7 +54,7 @@ public class DecisionMaker implements IBoardListener {
         asses=a;
         np=numberOfPlayers;
         r = new Random();
-        asses.getBoard().addListener(this);
+        lg=LogManager.getLogger(DecisionMaker.class.getName());
     }
     
     public Point decideMove(int player, boolean centralStrategyOn){
@@ -62,6 +62,11 @@ public class DecisionMaker implements IBoardListener {
         if(centralStrategyOn){
             Point[] cp = asses.getBoard().getCentralPoints();
             ret = getRandomField(cp);
+            String msg = "Random field ";
+            if (ret!=null){
+                msg+="("+ret.x+","+ret.y+")";
+            }
+            lg.info(msg);
         }
         if(ret==null){
             return decideMove(player);
@@ -77,7 +82,7 @@ public class DecisionMaker implements IBoardListener {
             int s=Math.abs(randomNumber.nextInt()%fieldsToLook.length);
             int counter=0;
             while(counter<fieldsToLook.length && !asses.getBoard().isMovePossible(fieldsToLook[s].x, fieldsToLook[s].y)){
-                s=randomNumber.nextInt()%fieldsToLook.length;
+                s=Math.abs(randomNumber.nextInt()%fieldsToLook.length);
                 counter++;
             }
             if(counter<fieldsToLook.length){
@@ -99,7 +104,7 @@ public class DecisionMaker implements IBoardListener {
             b = (Board) asses.getBoard().clone();
 
         } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(DecisionMaker.class.getName()).log(Level.SEVERE, null, ex);
+            lg.error("Board not cloned.", ex);
         }
         if (b != null) {
             return findBestPoint(player);         
@@ -114,10 +119,16 @@ public class DecisionMaker implements IBoardListener {
        
         if (asses.getBoard().freeFields() >= decisiontrees.DecisionTreesBuilderSettings.getBoardFreeFieldsSetting(asses.getBoard().getSize(), getNumberOfPlayers()) ) {
             //GET RANDOM FIELD
+            lg.info("Still random fields, as free fields condition has not been met.");
+            lg.info("Free fields setting: "+ decisiontrees.DecisionTreesBuilderSettings.getBoardFreeFieldsSetting(asses.getBoard().getSize(), getNumberOfPlayers()));
+            lg.info("Board free fields: "+ asses.getBoard().freeFields());
             minTn = new BoardNode(getRandomField(asses.getBoard().getPointFields()));
         } else {
             //FIND BEST NODE
+            lg.info("Finding best decision tree option.");
              List<TreeNode> firstLevelNodes = getDecisionTree().getNodesOfLevel(1);
+             lg.info("Number of Level 1 nodes: "+ firstLevelNodes.size());
+             lg.info("Search option: "+ option.toString());
             for (TreeNode tn : firstLevelNodes) {
                   if (option.equals(DecisionTreeSearchOption.SHORTEST_BRANCH)) {
                     k = getDecisionTree().getMinBranchLevel(tn);
@@ -146,6 +157,7 @@ public class DecisionMaker implements IBoardListener {
     protected Point findBestPoint(int cp){
         //TODO: avoid branches that lead to win of the opponent on all leaves
         //find the quickest way to win
+        lg.info("Trying to find the best way to win or draw.");
         TreeNode minTn=getDecisionBranchNode(cp, DecisionTreeSearchOption.SHORTEST_BRANCH);      
         if(minTn==null){
             //try to find th longest solution then
@@ -161,14 +173,4 @@ public class DecisionMaker implements IBoardListener {
         return new Point(-1,-1);
     }
 
-    @Override
-    public void ballPlaced(int player, Point r) {
-        //TODO: Think of removing this method and the IBoardListener interface from this class
-        List<TreeNode> fnodes = getDecisionTree().getNodesOfLevel( 1);
-        for (TreeNode tn : fnodes) {
-            if (tn instanceof BoardNode && ((BoardNode) tn).getStartPoint().x == r.x && ((BoardNode) tn).getStartPoint().y == r.y) {
-                break;
-            }
-        }
-    }
 }

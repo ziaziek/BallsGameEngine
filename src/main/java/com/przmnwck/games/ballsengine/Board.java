@@ -119,8 +119,8 @@ public class Board implements Serializable, Cloneable{
     
     /**
      * Next field on  of the given coordinates. Currently only Left and Right directions
-     * @param x
-     * @param y
+     * @param row
+     * @param column
      * @param direction
      * @return vector of coordinates of the next field
      */
@@ -161,9 +161,7 @@ public class Board implements Serializable, Cloneable{
         try {
             Board b = new Board(this.getSize());
             for(int i=0;i<getSize();i++){
-                for(int j=0; j<getSize(); j++){
-                    b.fields[i][j] = this.fields[i][j];
-                }
+                System.arraycopy(this.fields[i], 0, b.fields[i], 0, getSize());
             }
             return b;
         } catch (BoardException ex) {

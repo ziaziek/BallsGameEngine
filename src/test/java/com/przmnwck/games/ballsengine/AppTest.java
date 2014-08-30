@@ -2,7 +2,6 @@ package com.przmnwck.games.ballsengine;
 
 import com.przmnwck.games.ballsengine.trees.Tree;
 import com.przmnwck.games.ballsengine.trees.TreeNode;
-import decisiontrees.DecisionTreesBuilder;
 import java.awt.Point;
 import java.util.List;
 import static junit.framework.Assert.assertEquals;
@@ -201,7 +200,6 @@ public class AppTest
         int np=2;
         Board b = new Board(3);
         Assesor as = new Assesor(b);
-        DecisionTreesBuilder builder = new DecisionTreesBuilder(np, b.getSize());
         DecisionMaker dc = new DecisionMaker(as, np);
         assertNotNull(b);
         assertNotNull(as);
@@ -209,6 +207,7 @@ public class AppTest
         assertNotNull(as.getBoard());
         assertNotNull(dc.getAsses());
         assertEquals(np, dc.getNumberOfPlayers());
+        assertEquals(1, b.getBoardListeners().size());
         //Fun
         assertTrue(b.placeBall(1, 0, 0));
         assertTrue(b.placeBall(2, 1, 1));
