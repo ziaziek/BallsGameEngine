@@ -31,14 +31,10 @@ public class DecisionMaker {
         this.treeDepth = treeDepth;
     }
     
-    private Tree decisionTree=null; 
+    //private Tree decisionTree=null; 
 
-    public Tree getDecisionTree() {
-        if(decisionTree==null){
-            decisiontrees.DecisionTreesBuilder builder = new DecisionTreesBuilder(getNumberOfPlayers(), asses.getBoard().getSize());
-            decisionTree=builder.buildTree(asses.getBoard());    
-        }
-        return decisionTree;
+    public Tree gcreateDecisionTree() {
+        return new DecisionTreesBuilder(getNumberOfPlayers(), asses.getBoard().getSize()).buildTree(asses.getBoard());
     }
     
     public Assesor getAsses() {
@@ -126,20 +122,21 @@ public class DecisionMaker {
         } else {
             //FIND BEST NODE
             lg.info("Finding best decision tree option.");
-             List<TreeNode> firstLevelNodes = getDecisionTree().getNodesOfLevel(1);
+            Tree tree = gcreateDecisionTree();
+             List<TreeNode> firstLevelNodes = tree.getNodesOfLevel(1);
              lg.info("Number of Level 1 nodes: "+ firstLevelNodes.size());
-             lg.info("Search option: "+ option.toString());
+             lg.info("Search option: "+ option.toString());           
             for (TreeNode tn : firstLevelNodes) {
                   if (option.equals(DecisionTreeSearchOption.SHORTEST_BRANCH)) {
-                    k = getDecisionTree().getMinBranchLevel(tn);
+                    k = tree.getMinBranchLevel(tn);
                     if (((k - 1) % getNumberOfPlayers()) == 0 && (k < m || m == -1)) {
                         minTn = tn;
                         m = k;
                     }
                 } else if (option.equals(DecisionTreeSearchOption.LONGEST_BRANCH)) {
                     //doesn't really matter who wins, just keep the game going, and have a_row chance to block any incomming winning possibility
-                    k = getDecisionTree().getMaxBranchLevel(tn);
-                    if ((k > m || m == -1) && (getDecisionTree().getMinBranchLevel(tn) - tn.getLevel()) >= getNumberOfPlayers()) {
+                    k = tree.getMaxBranchLevel(tn);
+                    if ((k > m || m == -1) && (tree.getMinBranchLevel(tn) - tn.getLevel()) >= getNumberOfPlayers()) {
                         minTn = tn;
                         m = k;
                     }
@@ -164,7 +161,7 @@ public class DecisionMaker {
             minTn=getDecisionBranchNode(cp, DecisionTreeSearchOption.LONGEST_BRANCH);          
         }
         if(minTn==null) {
-            minTn=getDecisionTree().getNodesOfLevel(1).get(0);
+            minTn=gcreateDecisionTree().getNodesOfLevel(1).get(0);
         }
         if(minTn!=null && minTn instanceof BoardNode){
             return ((BoardNode)minTn).getStartPoint();
