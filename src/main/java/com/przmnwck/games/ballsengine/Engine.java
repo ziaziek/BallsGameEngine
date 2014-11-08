@@ -166,12 +166,22 @@ private boolean gameOver=false;
         notifyListeners(evt);
         if (!gameOver && automaticPlayer > 0 && 1 + player % numberOfPlayers == automaticPlayer) {
             evt.setState(EngineState.WAIT);
+            //Set the player number to automatic, as the engine starts work on its own move and has to notify the listeners of that fact
+            evt.player=automaticPlayer;
             notifyListeners(evt);
-            Point p = dc.decideMove(automaticPlayer, autoFirstMove);
+            
+            new Thread(){
+                
+                @Override
+                public void run(){
+                    Point p = dc.decideMove(automaticPlayer, autoFirstMove);
+                    board.placeBall(automaticPlayer, p.x, p.y); 
+                }
+                
+            }.start();
             if (autoFirstMove) {
                 autoFirstMove = false;
             }
-            board.placeBall(automaticPlayer, p.x, p.y);
         }
     }
 }
